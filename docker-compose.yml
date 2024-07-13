@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  py-srv:
+    build: py-srv
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+
+  zookeeper:
+    image: zookeeper
+
+  db:
+    image: yandex/clickhouse-server
+    healthcheck:
+      test: pwd || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    ports:
+      - 8123
+    volumes:
+      - ./db/clickhouse01:/etc/clickhouse-server
+
+  db2:
+    image: yandex/clickhouse-server
+    healthcheck:
+      test: pwd || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    ports:
+      - 8123
+    volumes:
+      - ./db/clickhouse02:/etc/clickhouse-server
